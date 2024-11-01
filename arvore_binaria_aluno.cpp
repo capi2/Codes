@@ -26,7 +26,7 @@ void iniciarArvore(tipoArvore *arvore){
 }
 
 tipoNo *criarNoAluno(tipoAluno informacoes_aluno){
-    tipoNo *no = (tipoNo*)malloc(sizeof(tipoNo));
+    tipoNo *no = new tipoNo();
     no->aluno_info = informacoes_aluno;
     no->pai = NULL;
     no->esquerda = NULL;
@@ -105,8 +105,21 @@ tipoNo *buscarAlunoAux(tipoNo *no, std::string nomeAluno){
     }
 }
 
+tipoNo *buscarAlunoAux2(tipoNo *no, std::string nomeAluno){
+    while(no){
+        if(!no->aluno_info.nome.compare(nomeAluno)){
+            return no;
+        }else if(nomeAluno.compare(no->aluno_info.nome) < 0){
+            no = no->esquerda;
+        }else{
+            no = no->direita;
+        }
+    }
+    return NULL;
+}
+
 void buscarAluno(tipoArvore *arvore, std::string nomeAluno){
-    tipoNo *aux = buscarAlunoAux(arvore->raiz, nomeAluno);
+    tipoNo *aux = buscarAlunoAux2(arvore->raiz, nomeAluno);
     if(aux){
         std::cout << "[SUCESSO] aluno " << nomeAluno << " encontrado!" << std::endl;
     }else{
@@ -135,7 +148,7 @@ void transplante(tipoArvore *arvore, tipoNo *u, tipoNo *v){
 }
 
 void deletarAluno(tipoArvore *arvore, std::string nomeAluno){
-    tipoNo *z = buscarAlunoAux(arvore->raiz, nomeAluno);
+    tipoNo *z = buscarAlunoAux2(arvore->raiz, nomeAluno);
     if(z){
         if(!z->esquerda){
             transplante(arvore, z, z->direita);
@@ -154,8 +167,8 @@ void deletarAluno(tipoArvore *arvore, std::string nomeAluno){
         }
         arvore->numNos--;
         std::string nome = z->aluno_info.nome;
-        free(z);
-        std::cout << nome << " foi deletado..." << std::endl;
+        delete(z);
+        std::cout << nome << " foi deletado!" << std::endl;
     }else{
         std::cout << "Nenhum aluno com nome " << nomeAluno << " para ser deletado..." << std::endl;
     }
@@ -216,9 +229,11 @@ int main(){
     
     mostrarArvore2(arvore.raiz);
 
-    buscarAluno(&arvore, "Andre");
+    buscarAluno(&arvore, "Geraldo Pereira");
+    buscarAluno(&arvore, "Pedro");
 
     deletarAluno(&arvore, "Oliver");
+    deletarAluno(&arvore, "Rogerio Lima");
 
     mostrarArvore2(arvore.raiz);
 }
